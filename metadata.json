@@ -1,0 +1,6 @@
+{
+  "name": "The Shadow Executive",
+  "description": "AI-powered Autonomous Micro-Agent Hub using Gemini 1.5 Pro to pre-emptively resolve impending deadlines through time-zero actions.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}
