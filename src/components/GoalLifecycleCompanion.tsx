@@ -118,15 +118,15 @@ export const GoalLifecycleCompanion: React.FC<CompanionProps> = ({
               type="text"
               value={goalInput}
               onChange={(e) => setGoalInput(e.target.value)}
-              placeholder={`What deadline or project are you racing against, ${userProfile.name.split(' ')[0]}?`}
-              className="w-full py-2 bg-transparent text-sm text-white placeholder:text-slate-500 focus:outline-none"
+              placeholder={`What would you like to accomplish today, ${userProfile.name.split(' ')[0]}?`}
+              className="w-full py-2 bg-transparent text-sm text-white placeholder:text-slate-400 focus:outline-none"
             />
             <button
               type="submit"
               disabled={!goalInput.trim() || isOrchestrating}
               className="px-4 py-2 rounded-xl bg-emerald-500 hover:bg-emerald-400 disabled:opacity-30 text-slate-950 font-bold text-xs shrink-0 flex items-center gap-1 cursor-pointer transition-all"
             >
-              <span>Ship AI</span>
+              <span>Start Goal</span>
               <ArrowRight className="w-3.5 h-3.5" />
             </button>
           </form>
@@ -139,7 +139,7 @@ export const GoalLifecycleCompanion: React.FC<CompanionProps> = ({
               className="px-3 py-2 rounded-xl bg-slate-950 hover:bg-slate-800 text-purple-300 border border-slate-800 text-xs font-medium flex items-center gap-1.5 cursor-pointer shrink-0 transition-all"
             >
               <Mic className={`w-3.5 h-3.5 ${isSpeaking ? 'animate-bounce text-purple-400' : 'text-purple-400'}`} />
-              <span>{isSpeaking ? 'Listening...' : 'Voice'}</span>
+              <span>{isSpeaking ? 'Listening...' : 'Voice Assist'}</span>
             </button>
 
             <button
@@ -149,18 +149,18 @@ export const GoalLifecycleCompanion: React.FC<CompanionProps> = ({
               className={`px-3 py-2 rounded-xl font-bold text-xs flex items-center gap-1.5 cursor-pointer shrink-0 transition-all ${
                 isCooked
                   ? 'bg-amber-400 text-slate-950 shadow-md shadow-amber-400/20'
-                  : 'bg-rose-500/10 hover:bg-rose-500 text-rose-400 hover:text-white border border-rose-500/30'
+                  : 'bg-amber-500/15 hover:bg-amber-500 text-amber-300 hover:text-slate-950 border border-amber-500/30'
               }`}
             >
-              <Flame className="w-3.5 h-3.5 fill-current" />
-              <span>{isCooked ? 'Triaging...' : 'I Am Cooked'}</span>
+              <Sparkles className="w-3.5 h-3.5 fill-current" />
+              <span>{isCooked ? 'Optimizing Plan...' : 'Boost & Catch Up'}</span>
             </button>
           </div>
         </div>
 
         {/* Minimal preset chips */}
         <div className="flex items-center gap-2 overflow-x-auto no-scrollbar px-1">
-          <span className="text-[11px] font-mono text-slate-500 shrink-0">Quick Intake:</span>
+          <span className="text-xs font-medium text-slate-400 shrink-0">Suggestions:</span>
           {presets.map((p, idx) => (
             <button
               key={idx}
@@ -182,7 +182,7 @@ export const GoalLifecycleCompanion: React.FC<CompanionProps> = ({
           <div className="flex items-center justify-between border-b border-slate-800/80 pb-3">
             <div className="flex items-center gap-2">
               <span className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse"></span>
-              <span className="text-xs font-bold font-mono tracking-wider uppercase text-slate-300">Focal Milestone</span>
+              <span className="text-xs font-bold tracking-wide uppercase text-slate-200">Today's Main Focus</span>
             </div>
             <span className="text-[10px] font-mono text-slate-400 bg-slate-950 px-2 py-1 rounded-md border border-slate-800">
               {topTask ? topTask.deadline : 'In Progress'}
@@ -202,7 +202,7 @@ export const GoalLifecycleCompanion: React.FC<CompanionProps> = ({
                 {completedTasks[topTask.id] ? <CheckCircle2 className="w-5 h-5 fill-emerald-500 text-slate-950" /> : <Circle className="w-5 h-5 stroke-[2.5]" />}
               </div>
               <div className="flex-1 min-w-0">
-                <span className="text-[10px] font-mono font-bold text-emerald-400 uppercase tracking-wide block mb-1">Current Action Step</span>
+                <span className="text-[11px] font-semibold text-emerald-400 uppercase tracking-wide block mb-1">Next Action Step</span>
                 <span className={`text-base font-bold leading-snug block ${completedTasks[topTask.id] ? 'line-through text-slate-500' : 'text-white'}`}>
                   {topTask.title}
                 </span>
@@ -211,7 +211,7 @@ export const GoalLifecycleCompanion: React.FC<CompanionProps> = ({
           )}
 
           <div className="flex flex-col gap-2 mt-1">
-            <span className="text-[11px] font-mono text-slate-500 uppercase tracking-wider font-semibold">Sub-Actions &amp; Checklist</span>
+            <span className="text-xs font-semibold text-slate-300 uppercase tracking-wider">Action Checklist</span>
             <div className="flex flex-col gap-1.5 max-h-56 overflow-y-auto pr-1">
               {localTasks.map(tsk => {
                 if (topTask && tsk.id === topTask.id) return null;
@@ -241,7 +241,7 @@ export const GoalLifecycleCompanion: React.FC<CompanionProps> = ({
           </form>
         </div>
 
-        {/* Right Panel: Auto-Drafted Deliverable (Col 6) */}
+        {/* Right Panel: Working Draft (Col 6) */}
         <div className="lg:col-span-6 bg-slate-900/80 border border-slate-800/80 rounded-2xl p-5 flex flex-col gap-4 shadow-xl">
           <div className="flex items-center justify-between border-b border-slate-800/80 pb-3">
             <div className="flex items-center gap-2 truncate pr-2">
@@ -297,8 +297,8 @@ export const GoalLifecycleCompanion: React.FC<CompanionProps> = ({
             <Shield className="w-4 h-4" />
           </div>
           <div>
-            <span className="text-xs font-bold text-white block">AI Calendar Shield Active</span>
-            <span className="text-[11px] text-slate-400">Protected focus blocks automatically synced</span>
+            <span className="text-xs font-bold text-white block">Focus Guarded</span>
+            <span className="text-[11px] text-slate-400">Your schedule is optimized for deep work</span>
           </div>
         </div>
 

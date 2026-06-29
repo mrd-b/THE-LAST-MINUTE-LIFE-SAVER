@@ -27,7 +27,7 @@ function getGeminiClient() {
 app.get('/api/health', (req, res) => {
   res.json({
     status: 'ok',
-    service: 'The Shadow Executive Autonomous Agent Hub',
+    service: 'FinishLine AI Autonomous Agent Hub',
     geminiLive: Boolean(process.env.GEMINI_API_KEY && process.env.GEMINI_API_KEY !== 'MY_GEMINI_API_KEY'),
     timestamp: new Date().toISOString()
   });
@@ -224,7 +224,7 @@ async function startServer() {
   }
 
   app.listen(PORT, '0.0.0.0', () => {
-    console.log(`⚡ The Shadow Executive Hub running on http://0.0.0.0:${PORT}`);
+    console.log(`⚡ FinishLine AI Hub running on http://0.0.0.0:${PORT}`);
   });
 }
 
