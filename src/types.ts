@@ -1,5 +1,12 @@
 export type PersonaId = 'student' | 'entrepreneur';
 
+export interface UserProfile {
+  name: string;
+  role: string;
+  focusArea: string;
+  workHours: string;
+}
+
 export interface CorpusFile {
   id: string;
   name: string;

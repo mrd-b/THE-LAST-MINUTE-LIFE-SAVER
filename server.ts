@@ -45,7 +45,7 @@ app.get('/api/metadata', (req, res) => {
 
 // Main autonomous micro-agent orchestration trigger
 app.post('/api/orchestrate-crisis', async (req, res) => {
-  const { scenarioId, customPrompt, personaId = 'student', forceSimulation = false } = req.body;
+  const { scenarioId, customPrompt, personaId = 'student', userProfile, forceSimulation = false } = req.body;
   const startTime = Date.now();
 
   const isPrebaked = Boolean(scenarioId && PREBAKED_ORCHESTRATIONS[scenarioId]);
@@ -56,12 +56,26 @@ app.post('/api/orchestrate-crisis', async (req, res) => {
     const fallbackId = isPrebaked ? scenarioId : (personaId === 'entrepreneur' ? 'entrepreneur-crisis-1' : 'student-crisis-1');
     const result = PREBAKED_ORCHESTRATIONS[fallbackId];
     
-    // Simulate realistic thought streaming delay if custom prompt was typed
-    if (customPrompt) {
-      await new Promise(resolve => setTimeout(resolve, 1200));
+    // Tailor dynamically if userProfile or custom prompt was provided
+    if (customPrompt || userProfile) {
+      await new Promise(resolve => setTimeout(resolve, 800));
       const customized = JSON.parse(JSON.stringify(result));
-      customized.logs[0].content = `Intercepted custom emergency trigger: "${customPrompt.slice(0, 80)}..."`;
-      customized.draftWorkspace.documentTitle = `Executive Action Plan: ${customPrompt.slice(0, 40)}`;
+      const promptText = customPrompt || (userProfile ? `Optimize schedule for ${userProfile.name} (${userProfile.role})` : 'Emergency Triage');
+      
+      customized.logs[0].content = `Ingested commitment input: "${promptText.slice(0, 90)}..."`;
+      customized.draftWorkspace.documentTitle = `${userProfile?.role ? userProfile.role + ' ' : ''}Action Draft: ${promptText.slice(0, 40)}`;
+      
+      if (userProfile) {
+        customized.executiveInsights.tasks[0].title = customPrompt ? `Execute deliverable: ${customPrompt.slice(0, 50)}` : `${userProfile.focusArea} Core Milestone`;
+        customized.communication.recipient = userProfile.role.toLowerCase().includes('student') ? 'Professor / Advisor' : 'Key Stakeholder / Client';
+        customized.communication.subject = `Update regarding ${promptText.slice(0, 40)}`;
+        customized.communication.body = `Hi,\n\nI am reaching out to share the latest status update on "${promptText}". I have blocked out dedicated deep focus time and structured the primary deliverables.\n\nBest regards,\n${userProfile.name || 'FinishLine User'}`;
+        customized.executiveInsights.voiceAssistantWorkflow.voiceScriptResponse = `I have prioritized "${promptText}" for ${userProfile.name}. Your calendar has been adjusted to protect deep focus blocks.`;
+      } else if (customPrompt) {
+        customized.executiveInsights.tasks[0].title = `Execute commitment: ${customPrompt.slice(0, 50)}`;
+        customized.executiveInsights.voiceAssistantWorkflow.voiceScriptResponse = `I analyzed your request "${customPrompt.slice(0, 40)}" and restructured your timeline.`;
+      }
+      
       customized.executionMode = 'autonomous-simulated';
       customized.totalLatencyMs = Date.now() - startTime;
       return res.json(customized);
@@ -75,14 +89,16 @@ app.post('/api/orchestrate-crisis', async (req, res) => {
 
   // Real Gemini 2.5 Pro / Flash Function Calling Execution
   try {
-    const systemInstruction = `You are "The Shadow Executive," an elite, autonomous micro-agent designed to eliminate user friction when a critical deadline or crisis is detected. You do not just remind the user; you take time-zero pre-emptive actions.
+    const userContextStr = userProfile ? `User Name: ${userProfile.name}, Role: ${userProfile.role}, Focus Area: ${userProfile.focusArea}, Work Hours: ${userProfile.workHours}.` : `Default User Role: ${personaId}`;
+    const systemInstruction = `You are FinishLine AI, an elite, autonomous micro-agent and executive companion for ${userProfile?.name || 'the user'}. You do not just remind the user; you take time-zero pre-emptive actions tailored to their exact role.
+${userContextStr}
 
-When a crisis scenario is initiated, you must orchestrate your response by executing the following loop:
+When a memo, note, or commitment is initiated, you must orchestrate your response by executing the following loop:
 1. Analyze the timeline and trigger \`adjust_calendar_schedule\` to clear space for the user.
-2. Ingest background reference data and call \`compile_draft_workspace\` to build a highly granular, 70% completed draft structure (using rich markdown, accurate code arrays, or structured data points).
-3. Call \`generate_communication_payload\` to create an appropriate out-of-band message template.
+2. Ingest background reference data and call \`compile_draft_workspace\` to build a highly granular, 80% completed draft structure (using rich markdown, outlines, or code arrays).
+3. Call \`generate_communication_payload\` to create an appropriate message template from ${userProfile?.name || 'the user'} to their relevant stakeholder.
 
-Avoid generic placeholders, vague conversational responses, or basic advice. Act like an automated executive assistant.`;
+Avoid generic placeholders, vague conversational responses, or basic advice. Act like an autonomous executive assistant.`;
 
     const toolDeclarations = [
       {
